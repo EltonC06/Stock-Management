@@ -1,5 +1,6 @@
 package entities;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Stock {
@@ -13,9 +14,10 @@ public class Stock {
 	private double accumulatedValue;
 	private Date recordDate;
 	
+	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 	public Stock() {
-		
+
 	}
 	
 	public Stock(String stockName, String stockSector, double startValue, Date startDate, double accumulatedValue, Date recordDate) {
@@ -39,7 +41,7 @@ public class Stock {
 	public double getStartValue() {
 		return startValue;
 	}
-	public void setStartValue(float startValue) {
+	public void setStartValue(double startValue) {
 		this.startValue = startValue;
 	}
 	public Date getStartDate() {
@@ -51,7 +53,7 @@ public class Stock {
 	public double getAccumulatedValue() {
 		return accumulatedValue;
 	}
-	public void setAccumulatedValue(float accumulatedValue) {
+	public void setAccumulatedValue(double accumulatedValue) {
 		this.accumulatedValue = accumulatedValue;
 	}
 	public Date getRecordDate() {
@@ -65,8 +67,8 @@ public class Stock {
 	
 	@Override
 	public String toString() {
-		return "Stock [stockName=" + stockName + ", startValue=" + startValue + ", startDate=" + startDate
-				+ ", accumulatedValue=" + accumulatedValue + ", recordDate=" + recordDate + "]";
+		return "[Stock:" + stockName + ", Start value:" + startValue + ", Start date=" + sdf.format(startDate)
+				+ ", Accumulated value=" + accumulatedValue + ", Record date=" + sdf.format(recordDate) + "]";
 	}
 
 	public String getStockSector() {

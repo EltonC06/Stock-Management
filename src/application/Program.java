@@ -21,7 +21,8 @@ public class Program {
 		
 		Stock stock = new Stock("TESTE4F", "tomada1", 100.00, sdf.parse("10/10/1000"), 120.00, sdf.parse("10/10/2000"));
 		
-		manager.insertStock(stock);
+
+		manager.showAllStocks();
 		
 
 	}
