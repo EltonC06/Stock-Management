@@ -21,7 +21,7 @@ public class Stock {
 	}
 	
 	public Stock(String stockName, String stockSector, double startValue, Date startDate, double accumulatedValue, Date recordDate) {
-		super();
+		super(); // mudar para Integer
 		this.stockName = stockName;
 		this.stockSector = stockSector;
 		this.startValue = startValue;
@@ -67,8 +67,8 @@ public class Stock {
 	
 	@Override
 	public String toString() {
-		return "[Stock:" + stockName + ", Start value:" + startValue + ", Start date=" + sdf.format(startDate)
-				+ ", Accumulated value=" + accumulatedValue + ", Record date=" + sdf.format(recordDate) + "]";
+		return "Stock:" + stockName + ", Sector: " + stockSector + ", Start value:" + startValue + ", Start date=" + sdf.format(startDate)
+				+ ", Accumulated value=" + accumulatedValue + ", Record date=" + sdf.format(recordDate) + "";
 	}
 
 	public String getStockSector() {
