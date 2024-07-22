@@ -113,7 +113,7 @@ public class StockManager {
 			} catch (SQLException msg) {
 				throw new DbException(msg.getMessage());
 			}
-			
+			break;
 		case date:
 			try {
 				conn = DB.getConnection();
@@ -127,7 +127,8 @@ public class StockManager {
 				throw new DbException(msg.getMessage());
 			} catch (ParseException e) {
 				e.printStackTrace();
-			}			
+			}	
+			break;
 		}
 
 	}
