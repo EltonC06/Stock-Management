@@ -6,7 +6,7 @@ import java.util.Date;
 public class Stock {
 	
 	
-	
+	private int stockId;
 	private String stockName;
 	private String stockSector;
 	private double startValue;
@@ -20,6 +20,17 @@ public class Stock {
 
 	}
 	
+	public Stock(int stockId, String stockName, String stockSector, double startValue, Date startDate, double accumulatedValue, Date recordDate) {
+		super(); // mudar para Integer
+		this.stockId = stockId;
+		this.stockName = stockName;
+		this.stockSector = stockSector;
+		this.startValue = startValue;
+		this.startDate = startDate;
+		this.accumulatedValue = accumulatedValue;
+		this.recordDate = recordDate;
+	}
+
 	public Stock(String stockName, String stockSector, double startValue, Date startDate, double accumulatedValue, Date recordDate) {
 		super(); // mudar para Integer
 		this.stockName = stockName;
@@ -29,7 +40,6 @@ public class Stock {
 		this.accumulatedValue = accumulatedValue;
 		this.recordDate = recordDate;
 	}
-
 	
 	
 	public String getStockName() {
@@ -67,7 +77,7 @@ public class Stock {
 	
 	@Override
 	public String toString() {
-		return "Stock:" + stockName + ", Sector: " + stockSector + ", Start value:" + startValue + ", Start date=" + sdf.format(startDate)
+		return "[" + stockId + "] Stock:" + stockName + ", Sector: " + stockSector + ", Start value:" + startValue + ", Start date=" + sdf.format(startDate)
 				+ ", Accumulated value=" + accumulatedValue + ", Record date=" + sdf.format(recordDate) + "";
 	}
 
@@ -77,6 +87,14 @@ public class Stock {
 
 	public void setStockSector(String stockSector) {
 		this.stockSector = stockSector;
+	}
+
+	public int getStockId() {
+		return stockId;
+	}
+	
+	public void setStockId(int stockId) {
+		this.stockId = stockId;
 	}
 	
 	

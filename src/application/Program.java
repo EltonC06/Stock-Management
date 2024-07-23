@@ -28,7 +28,7 @@ public class Program {
 		System.out.println("--- Bem vindo ao Stock Management ---");
 		
 		while (true) {
-			System.out.println("O que você deseja fazer? \n1)Adicionar nova ação \n2)Ver lista completa de ações \n3)Adicionar novo registro \n4)Deletar ação específica \n5)Alterar algum dado da ação \n6) Gerar lucro total \n7) Sair do programa ");
+			System.out.println("O que você deseja fazer? \n1)Adicionar nova ação \n2)Ver lista completa de ações \n3)Adicionar novo registro \n4)Deletar ação específica \n5)Alterar algum dado da ação \n6) Gerar lucro total \n7) Gerar lucro específico\n8) Sair do programa ");
 			int decision = sc.nextInt();
 			
 			switch (decision) {
@@ -62,12 +62,19 @@ public class Program {
 				totalProfit();
 				
 				break;
+				
 			case 7:
+				specificProfit();
+				
+				break;
+			case 8:
 				// terminar programa
 				break;
 			}
 			
 			if (decision == 7) {
+				saveAndQuit();
+				System.out.println("Tabela salva e Ids resetados.");
 				break;
 			}
 
@@ -75,6 +82,12 @@ public class Program {
 
 	}
 	
+
+
+	private static void saveAndQuit() {
+		manager.resetStockId();
+	}
+
 	public static void addNewStock() {
 		System.out.println("Digite o seu código:");
 		String stockName = sc.next();
@@ -88,19 +101,12 @@ public class Program {
 		System.out.println("Data de quando o investimento foi realizado [dd/mm/yyyy]: ");
 		String initialDate = sc.next();
 		
-		// se a data for diferente da de hoje, não perguntar as proximas perguntas
-		
-		System.out.println("Valor acumulado do investimento");
-		double actualValue = sc.nextDouble();
-		
-		
-		System.out.println("Data de registro de seu último valor acumulado [dd/mm/yyyy]:");
-		String actualDate = sc.next();
+		// não precisa botar dados do valor acumulado, pois ele ta acabando de adicionar o investimento
 		
 		Stock tempStock = null; // aq inicializei
 		try { // aq instanciei o objeto
-			tempStock = new Stock(stockName, stockSector, initialValue, sdf.parse(initialDate), actualValue, sdf.parse(actualDate));
-		} catch (ParseException e) {
+			tempStock = new Stock(stockName, stockSector, initialValue, sdf.parse(initialDate), initialValue, sdf.parse(initialDate));
+		} catch (ParseException e) { // para mandar para o sql não precisa mandar com id
 			e.printStackTrace();
 		}
 		
@@ -190,6 +196,7 @@ public class Program {
 		case 2:
 			System.out.println("Digite o novo nome do setor:");
 			String stockSector = sc.next();
+			manager.changeStockData(idDecision, ColumnName.sector, stockSector, DataType.stringandvalue);
 			
 			break;
 		
@@ -197,11 +204,14 @@ public class Program {
 			System.out.println("Digite o novo valor investido:");
 			double investedValue = sc.nextDouble();
 			
+			manager.changeStockData(idDecision, ColumnName.start_value, investedValue+"", DataType.stringandvalue);
+			
 			break;
 		
 		case 4:
 			System.out.println("Digite uma nova data [dd/mm/yyyy]:");
 			String newDate = sc.next();
+			manager.changeStockData(idDecision, ColumnName.start_date, newDate, DataType.date);
 			break;
 		}
 			
@@ -212,13 +222,27 @@ public class Program {
 	} // da o mesmo resultado independente do valor do objeto
 	// metodo estatico: independente da instanciação do objeto o seu resultado não deve variar. (não precisa instanciar objeto)
 	public static void totalProfit() { // metodos estaticos não precisa de objetos para ser criados
-		StockManager manager = new StockManager(); // o comportamento desse metodo não varia, deiferente de um metodo não estatico
 		double profitList[] = manager.getGeneralGain();
 		
 		System.out.println("Valor inicial investido = " + profitList[0]);
 		System.out.println("Valor final do investimento = " + profitList[1]);
 		System.out.println("Lucro em R$ = " + profitList[2]);
 		System.out.printf("Lucro em porcentagem: %.2f \n\n", profitList[3]);
+		
+	}
+	
+	private static void specificProfit() {
+		manager.showAllStocks();
+		
+		System.out.println("Digite o id da ação que deseja ver o lucro específico:");
+		int specificId = sc.nextInt();
+		
+		double specificProfit[] = manager.getSpecificGain(specificId);
+		
+		System.out.println("Valor inicial investido = " + specificProfit[0]);
+		System.out.println("Valor final do investimento = " + specificProfit[1]);
+		System.out.println("Lucro em R$ = " + specificProfit[2]);
+		System.out.printf("Lucro em porcentagem = %.2f%n", specificProfit[3]);
 		
 	}
 	
