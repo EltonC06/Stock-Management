@@ -1,11 +1,14 @@
 package application;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.InputMismatchException;
 import java.util.Locale;
 import java.util.Scanner;
 
+import db.DbException;
 import entities.Stock;
 import entities.StockManager;
 import entities.enums.ColumnName;
@@ -28,57 +31,71 @@ public class Program {
 		System.out.println("--- Bem vindo ao Stock Management ---");
 		
 		while (true) {
-			System.out.println("O que você deseja fazer? \n1)Adicionar nova ação \n2)Ver lista completa de ações \n3)Adicionar novo registro \n4)Deletar ação específica \n5)Alterar algum dado da ação \n6) Gerar lucro total \n7) Gerar lucro específico\n8) Sair do programa ");
-			int decision = sc.nextInt();
+			System.out.println("\nO que você deseja fazer? \n\n1) Adicionar nova ação \n2) Ver lista completa de ações \n3) Adicionar novo registro \n4) Deletar ação específica \n5) Alterar algum dado da ação \n6) Gerar lucro total \n7) Gerar lucro específico\n8) Sair do programa ");
+			System.out.print("\nDigite aqui: ");
 			
-			switch (decision) {
-			case 1:
-				// o valor inicial de investimento deve mudar de nome para valor investido. E o outro para valor acumulado
-				addNewStock();
+			try {
+				int decision = sc.nextInt();
 				
-				// tenho que pegar essas declarações de variaveis e declarar no inicio do programa
-				break;
-			case 2:
-				showAllStocks();
+				switch (decision) {
+				case 1:
+					// adicionar ação
+					addNewStock(); // AE
+					
+					break;
+				case 2:
+					// mostrar ações
+					showAllStocks(); // AE
+					
+					break;
+				case 3:
+					// novo registro
+					addNewRecord(); // AE
+	
+					break;
+				case 4:
+					// deletar ação especifica
+					deleteSpecificStock(); // AE
+					
+					break;
+				case 5:
+					// alterar dado
+					changeStockData();
+	
+					break;
+				case 6:
+					// lucro
+					totalProfit(); // AE
+					
+					break;
+					
+				case 7:
+					specificProfit(); // AE
+					
+					break;
+				case 8:
+					// terminar programa // AE
+					break;
+				}
 				
-				break;
-			case 3:
-				// novo registro
-				addNewRecord();
-
-				break;
-			case 4:
-				// deletar ação especifica
-				deleteSpecificStock();
+				if (decision == 8) {
+					System.out.println("\nSaving and quiting program...");
+					saveAndQuit();
+					System.out.println("Database saved and program shutted down!");
+					
+					break;
+				}
 				
-				break;
-			case 5:
-				// alterar dado
-				changeStockData();
-
-				break;
-			case 6:
-				// lucro
-				totalProfit();
-				
-				break;
-				
-			case 7:
-				specificProfit();
-				
-				break;
-			case 8:
-				// terminar programa
-				break;
+				if (decision < 1 || decision > 8) {
+					System.out.println("\nPor favor, digite uma opção válida!");
+				}
+	
+			} catch (InputMismatchException e) {
+				System.out.println("\nPor favor, digite um valor válido!");
+				sc.next();
 			}
-			
-			if (decision == 7) {
-				saveAndQuit();
-				System.out.println("Tabela salva e Ids resetados.");
-				break;
-			}
-
-		}	
+		}
+		//
 
 	}
 	
@@ -89,87 +106,176 @@ public class Program {
 	}
 
 	public static void addNewStock() {
-		System.out.println("Digite o seu código:");
-		String stockName = sc.next();
+		Stock tempStock = null;
 		
-		System.out.println("Digite seu setor:");
-		String stockSector = sc.next();
+		String stockName;
+		String stockSector;
+		double initialValue;
+		String initialDate = null;
 		
-		System.out.println("Valor inicial de investimento:");
-		double initialValue = sc.nextDouble();
-		
-		System.out.println("Data de quando o investimento foi realizado [dd/mm/yyyy]: ");
-		String initialDate = sc.next();
-		
-		// não precisa botar dados do valor acumulado, pois ele ta acabando de adicionar o investimento
-		
-		Stock tempStock = null; // aq inicializei
-		try { // aq instanciei o objeto
-			tempStock = new Stock(stockName, stockSector, initialValue, sdf.parse(initialDate), initialValue, sdf.parse(initialDate));
-		} catch (ParseException e) { // para mandar para o sql não precisa mandar com id
-			e.printStackTrace();
+		while (true) {
+			while (true) {
+				try {
+					System.out.print("Digite o seu código: ");
+					stockName = sc.next();
+					if (stockName.length() > 10) {
+						System.out.println("\nLimite máximo de caracteres atingido (>10), tente novamente!");
+					}
+					else {
+						break;
+					}
+				} catch (InputMismatchException e) {
+					System.out.println("");
+				}
+			}
+			
+			while (true) {
+				try {
+					System.out.print("Digite seu setor: ");
+					
+					stockSector = sc.next();
+	
+					if (stockSector.length() > 20) {
+						System.out.println("\nLimite máximo de caracteres atingido (>20), tente novamente!");
+					}
+					else {
+						break;
+					}
+					
+				} catch (InputMismatchException e) {
+					System.out.println("\nPor favor, digite um valor válido!");
+				}
+			}
+			
+			while (true) {
+				try {
+					System.out.print("Valor inicial de investimento: R$");
+					initialValue = sc.nextDouble();
+					
+					String[] separate = Double.toString(initialValue).split(",");
+					
+					
+					if ( Double.toString(initialValue).length() > 12 || separate[0].length() > 10) {
+						System.out.println("\nLimite máximo de dígitos atingido (>12), tente novamente!");
+					} else {
+						break;
+					}
+					
+				} catch (InputMismatchException e) {
+					System.out.println("\nPor favor, digite um valor válido. [Ex: 100,00]!");
+					sc.next();
+				}
+			}
+			
+			while (true) {
+				try {
+					System.out.print("Data de quando o investimento foi realizado [dd/mm/yyyy]: ");
+					initialDate = sc.next();
+					sdf.parse(initialDate);
+					break;
+				} catch (ParseException e) {
+					System.out.println("\nFormato de data digitado de maneira incorreta, tente novamente!");
+				}
+			}
+	
+				
+			
+			try {
+				tempStock = new Stock(stockName, stockSector, initialValue, sdf.parse(initialDate), initialValue, sdf.parse(initialDate));
+			} catch (ParseException e) { // para mandar para o sql não precisa mandar com id
+				System.out.println("\nFormato de data digitado de maneira incorreta, tente novamente!");
+			} catch (InputMismatchException e) {
+				System.out.println("\nAlgum valor não foi digitado no formato desejado, tente novamente.");
+			} catch (DbException e) {
+				System.out.println("\nAlgum valor não foi digitado no formato desejado, tente novamente.");
+			}
+			break;
 		}
 		
 		manager.insertStock(tempStock);
-		System.out.println("new stock saved");
-		
-		
-		
 		
 	}
 	
 	public static void showAllStocks() {
+		
 		manager.showAllStocks();
 		
 	}
 	
 	public static void addNewRecord() {
-		int idDecision;
-		double actualValue;
-		String dateDecision;
+		int idDecision = 0;
+		double actualValue = 0;
+		String dateDecision = null;
 		Date today = new Date();
 		manager.showAllStocks();
 		
-		System.out.println("\nSelecione um id de ação para adicionar um novo registro:");
-		idDecision = sc.nextInt();
+		while (true) {
+			try {
+				System.out.println("\nSelecione um id de ação para adicionar um novo registro:");
+				idDecision = sc.nextInt();
+				break;
+			} catch(InputMismatchException e) {
+				System.out.println("\nPor favor, digite um valor válido!");
+			}
+		}
 		
-		System.out.println("Digite seu valor atual:");
-		actualValue = sc.nextDouble();
+		while (true) {
+			try {
+				System.out.println("Digite seu valor atual:");
+				actualValue = sc.nextDouble();
+			} catch (InputMismatchException e) {
+				System.out.println("\nPor favor, digite um valor válido!");
+			}
+			break;
+		}
 		
-		System.out.println("Preço registrado hoje [Y/N]?");
-		
-		dateDecision = sc.next();
+		while (true) {
+			try {
+				System.out.println("Preço registrado hoje [Y/N]?");
+				dateDecision = sc.next();
+				if (!dateDecision.equalsIgnoreCase("Y") && !dateDecision.equalsIgnoreCase("N")) {
+					System.out.println("\nPor favor, digite um valor válido!");
+				} else {
+					break;
+				}
+			} catch (InputMismatchException e) {
+				System.out.println("\nPor favor, digite um valor válido!");
+			}
+
+		}
 		
 		if (dateDecision.equalsIgnoreCase("Y")) {
 			manager.addNewStockRecord(idDecision, actualValue, today);
 			System.out.println("Salvo");
 		}
-		else {
-			System.out.println("Digite a data de registro [dd/MM/yyyy]: ");
-			String recordDate = sc.next();
+		else if (dateDecision.equalsIgnoreCase("N")){
+			String recordDate;
+			while (true) {
+				try {
+					System.out.println("Digite a data de registro [dd/MM/yyyy]: ");
+					recordDate = sc.next();
+					sdf.parse(recordDate);
+					break;
+				} catch (ParseException e) {
+					System.out.println("\nFormato de data digitado de maneira incorreta, tente novamente!");
+				}
+			}
+				
 			try {
 				manager.addNewStockRecord(idDecision, actualValue, sdf.parse(recordDate));
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-			System.out.println("Salvo");
+			
+			System.out.println("\nNovo registro salvo!");
 		}
+		
+
 		
 		
 	}
 	
-	public static void deleteSpecificStock() { // não ta funcionando direito (tenho que usar o id original da tabela SQL)
-		
-		manager.showAllStocks();
-		
-		System.out.println("\nSelecione um id de ação para deletar:");
-		int idDecision = sc.nextInt();
-		
-		manager.deleteStock(idDecision);
-		System.out.println("Ação deletada com sucesso!");
-		
-		
-	}
+
 	
 	public static void changeStockData() {
 		int columnOption;
@@ -190,7 +296,6 @@ public class Program {
 			System.out.println("Digite o novo nome da ação: ");
 			String stockName = sc.next();
 			manager.changeStockData(idDecision, ColumnName.stock, stockName, DataType.stringandvalue);
-			
 			break;
 			
 		case 2:
@@ -231,11 +336,43 @@ public class Program {
 		
 	}
 	
+	public static void deleteSpecificStock() {
+		
+		manager.showAllStocks();
+		while (true) {
+			try {
+				System.out.println("\nSelecione um id de ação para deletar:");
+	
+				int idDecision = sc.nextInt();
+				manager.deleteStock(idDecision);
+				break;
+			} catch (InputMismatchException e) {
+				System.out.println("\nPor favor, digite um valor válido!");
+				sc.next();
+			}
+		}
+		// lista com todos os ids, se o id que o usuario digitar não tiver na lista, avisar
+		
+		System.out.println("Ação deletada com sucesso!");
+		
+		
+	}
+	
 	private static void specificProfit() {
 		manager.showAllStocks();
+		int specificId;
+		while (true) {
+			try {
+				System.out.println("Digite o id da ação que deseja ver o lucro específico:");
+				specificId = sc.nextInt();
+				break;
+			} catch (InputMismatchException e) {
+				System.out.println("Por favor, digite um valor válido!");
+				sc.next();
+			}
+		}
+
 		
-		System.out.println("Digite o id da ação que deseja ver o lucro específico:");
-		int specificId = sc.nextInt();
 		
 		double specificProfit[] = manager.getSpecificGain(specificId);
 		

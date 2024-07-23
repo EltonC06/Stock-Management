@@ -40,7 +40,8 @@ public class StockManager {
 			// o format transforma a data em string no formato desejado. O parse transforma o string em data no formato desejado
 			st.execute(query);
 		} catch (SQLException msg) {
-			throw new DbException(msg.getMessage());
+			//throw new DbException(msg.getMessage());
+			System.out.println("\nAlgum valor não foi digitado no formato desejado e a ação registrada não foi salva\ntente novamente!");
 		}
 		// o id vai ser gerado la, e eu o-trago pra cá
 	}
