@@ -74,10 +74,34 @@ public class Program {
 				}
 				
 				if (decision == 8) {
+					String csvDecision = null;
+					
+					while (true) {
+						
+						try {
+							
+							System.out.print("Save Stock, accumulated value and record date on CSV archive [Y/N]?");
+							csvDecision = sc.next();
+							
+							if (!csvDecision.equalsIgnoreCase("y") && !csvDecision.equalsIgnoreCase("n")) {
+								System.out.println("Por favor, digite um valor válido!");
+							} else {
+								
+								if (csvDecision.equalsIgnoreCase("y")) {
+									saveAndQuit(true);
+								} else {
+									
+								}
+								
+								break;
+							
+							}		
+						} catch (InputMismatchException e) {
+							System.out.println("Por favor, digite um valor válido!");
+						}
+					}
 					
 					System.out.println("\nSaving and quiting program...");
-					
-					saveAndQuit();
 					
 					System.out.println("Database saved and program shutted down!");
 					
@@ -99,10 +123,10 @@ public class Program {
 	
 	
 	
-	private static void saveAndQuit() {
+	private static void saveAndQuit(boolean csvSave) {
 		manager.resetStockId();
 		sc.close();
-		manager.closeSystem();
+		manager.closeSystem(csvSave);
 	}
 	
 	
@@ -458,5 +482,6 @@ public class Program {
 //TODOF formatar dinheiro 
 //TODOF descobrir como bota porcentagem no lucro VVV
 //TODO ajeitar codigo (metade feito, falta dentro dos metodos)
-//TODO opção de salvar backup do atual estado da ação? (so o nome, acumulo, data)
+//TODOF opção de salvar backup do atual estado da ação? (so o nome, acumulo, data)
+	//TODO recuperar arquivo csv salvo e separar por data que salvou cada
 //TODOF ajustar limite de dinheiro VVV

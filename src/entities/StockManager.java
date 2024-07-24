@@ -292,9 +292,10 @@ public class StockManager {
 	
 	
 	
-	public void closeSystem() {
+	public void closeSystem(boolean csvSave) {
 		
-		saveStockData();
+
+		saveStockData(csvSave);
 		
 		DB.closeConnection();
 		try {
@@ -307,8 +308,14 @@ public class StockManager {
 	
 	
 	
-	private void saveStockData() {
+	private void saveStockData(boolean csvSave) {
 		resetStockId();
+		
+		if (csvSave) {
+			pss.dateAndDataFormat();
+		}
+		else {
+		}
 		
 		for (int i = 0; i < listOfStocks.size(); i++) {
 			
