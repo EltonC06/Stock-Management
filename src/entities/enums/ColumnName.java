@@ -2,9 +2,9 @@ package entities.enums;
 
 public enum ColumnName {
 	
-	id, // string
-	stock, // string
-	sector, // string
+	id,
+	stock,
+	sector,
 	start_value,
 	start_date,
 	accumulated_value,

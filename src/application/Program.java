@@ -1,5 +1,6 @@
 package application;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,99 +15,100 @@ import entities.enums.ColumnName;
 import entities.enums.DataType;
 
 public class Program {
-	static Scanner sc = new Scanner(System.in);
+	static Scanner sc = new Scanner(System.in).useLocale(Locale.US);
 	
 	static StockManager manager = new StockManager();
 	
 	static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+	
+	static private DecimalFormat df = new DecimalFormat("#,###,###,##0.00");
+	
 
 	public static void main(String[] args) throws ParseException {
 		
 		Locale.setDefault(Locale.US);
-		
-		
-		
-		
+	
 		System.out.println("--- Bem vindo ao Stock Management ---");
 		
 		while (true) {
+			
 			System.out.println("\nO que você deseja fazer? \n\n1) Adicionar nova ação \n2) Ver lista completa de ações \n3) Adicionar novo registro \n4) Deletar ação específica \n5) Alterar algum dado da ação \n6) Gerar lucro total \n7) Gerar lucro específico\n8) Sair do programa ");
 			System.out.print("\nDigite aqui:");
 			
 			try {
+				
 				int decision = sc.nextInt();
 				
 				switch (decision) {
+				
 				case 1:
-					// adicionar ação
-					addNewStock(); // AE
-					
+					addNewStock();
 					break;
+					
 				case 2:
-					// mostrar ações
-					showAllStocks(); // AE
-					
+					showAllStocks();
 					break;
+					
 				case 3:
-					// novo registro
-					addNewRecord(); // AE
-	
+					addNewRecord();
 					break;
+					
 				case 4:
-					// deletar ação especifica
-					deleteSpecificStock(); // AE
-					
+					deleteSpecificStock();
 					break;
+					
 				case 5:
-					// alterar dado
-					changeStockData(); // AE
-	
+					changeStockData();
 					break;
-				case 6:
-					// lucro
-					totalProfit(); // AE
 					
+				case 6:
+					totalProfit();
 					break;
 					
 				case 7:
-					specificProfit(); // AE
-					
+					specificProfit();
 					break;
+					
 				case 8:
-					// terminar programa // AE
 					break;
 				}
 				
 				if (decision == 8) {
+					
 					System.out.println("\nSaving and quiting program...");
+					
 					saveAndQuit();
+					
 					System.out.println("Database saved and program shutted down!");
 					
 					break;
 				}
 				
-				if (decision < 1 || decision > 8) {
+				if (decision < 1 || decision > 8) {					
 					System.out.println("\nPor favor, digite uma opção válida!");
+					
 				}
 	
 			} catch (InputMismatchException e) {
 				System.out.println("\nPor favor, digite um valor válido!");
 				sc.next();
+				
 			}
 		}
-		
-
 	}
 	
-
-
+	
+	
 	private static void saveAndQuit() {
 		manager.resetStockId();
+		sc.close();
+		manager.closeSystem();
 	}
+	
+	
 
 	public static void addNewStock() {
 		Stock tempStock = null;
-		
 		String stockName;
 		String stockSector;
 		double initialValue;
@@ -148,20 +150,18 @@ public class Program {
 			
 			while (true) {
 				try {
+					double maxValue = 9999999999.99;
 					System.out.print("\nValor inicial de investimento: R$");
 					initialValue = sc.nextDouble();
-					
-					String[] separate = Double.toString(initialValue).split(",");
-					
-					
-					if ( Double.toString(initialValue).length() > 12 || separate[0].length() > 10) {
+
+					if ( initialValue > maxValue ) {
 						System.out.println("\nLimite máximo de dígitos atingido (>12), tente novamente!");
 					} else {
 						break;
 					}
 					
 				} catch (InputMismatchException e) {
-					System.out.println("\nPor favor, digite um valor válido. [Ex: 100,00]!");
+					System.out.println("\nPor favor, digite um valor válido. [Ex: 100.00]!");
 					sc.next();
 				}
 			}
@@ -180,27 +180,31 @@ public class Program {
 				
 			
 			try {
+				
 				tempStock = new Stock(stockName, stockSector, initialValue, sdf.parse(initialDate), initialValue, sdf.parse(initialDate));
+				manager.insertStock(tempStock, true);
+				break;
 			} catch (ParseException e) { 
 				System.out.println("\nFormato de data digitado de maneira incorreta, tente novamente!");
 			} catch (InputMismatchException e) {
-				System.out.println("\nAlgum valor não foi digitado no formato desejado, tente novamente.");
+				System.out.println("\nAlgum valor não foi digitado no formato desejado, tente novamente!");
 			} catch (DbException e) {
-				System.out.println("\nAlgum valor não foi digitado no formato desejado, tente novamente.");
+				System.out.println("\nAlgum valor não foi digitado no formato desejado, tente novamente!");
 			}
-			break;
 		}
 		
-		manager.insertStock(tempStock);
 		
-		System.out.println("\nNovo investimento adicionado com sucesso no banco de dados.");
 	}
+	
+	
 	
 	public static void showAllStocks() {
 		System.out.println();
 		manager.showAllStocks();
 		
 	}
+	
+	
 	
 	public static void addNewRecord() {
 		int idDecision = 0;
@@ -226,7 +230,7 @@ public class Program {
 				actualValue = sc.nextDouble();
 				break;
 			} catch (InputMismatchException e) {
-				System.out.println("\nPor favor, digite um valor válido! [Ex: 100,00]");
+				System.out.println("\nPor favor, digite um valor válido! [Ex: 100.00]");
 				sc.next();
 			}
 		}
@@ -271,10 +275,6 @@ public class Program {
 			
 			System.out.println("\nNovo registro salvo no banco de dados!");
 		}
-		
-
-		
-		
 	}
 	
 
@@ -366,7 +366,7 @@ public class Program {
 					}
 					
 				} catch (InputMismatchException e) {
-					System.out.println("\nPor favor, digite um valor válido. [Ex: 100,00]!");
+					System.out.println("\nPor favor, digite um valor válido. [Ex: 100.00]!");
 					sc.next();
 				}
 			}
@@ -387,22 +387,20 @@ public class Program {
 			manager.changeStockData(idDecision, ColumnName.start_date, newDate, DataType.date);
 			break;
 		}
-			
-		
-		
-		
-		
 	} 
+	
+	
 	
 	public static void totalProfit() { 
 		double profitList[] = manager.getGeneralGain();
 		
-		System.out.println("\nValor inicial investido = " + profitList[0]);
-		System.out.println("Valor final do investimento = " + profitList[1]);
-		System.out.println("Lucro em R$ = " + profitList[2]);
-		System.out.printf("Lucro em porcentagem: %.2f \n", profitList[3]);
-		
+		System.out.println("\nValor inicial investido = R$" + df.format(profitList[0]));
+		System.out.println("Valor final do investimento = R$" + df.format(profitList[1]));
+		System.out.println("Lucro em R$ = R$" + df.format(profitList[2]));
+		System.out.printf("Lucro em porcentagem: %.2f%% \n", profitList[3]);
 	}
+	
+	
 	
 	public static void deleteSpecificStock() {
 		
@@ -421,10 +419,10 @@ public class Program {
 			}
 		}
 		
-		System.out.println("\nAção deletada com sucesso!");
-		
-		
+		System.out.println("\nAção deletada com sucesso!");		
 	}
+	
+	
 	
 	private static void specificProfit() {
 		System.out.println();
@@ -443,21 +441,22 @@ public class Program {
 
 		double specificProfit[] = manager.getSpecificGain(specificId);
 		
-		System.out.println("\nValor inicial investido = " + specificProfit[0]);
-		System.out.println("Valor final do investimento = " + specificProfit[1]);
-		System.out.println("Lucro em R$ = " + specificProfit[2]);
-		System.out.printf("Lucro em porcentagem = %.2f%n", specificProfit[3]);
-		
+		System.out.println("\nValor inicial investido = " + df.format(specificProfit[0]));
+		System.out.println("Valor final do investimento = " + df.format(specificProfit[1]));
+		System.out.println("Lucro em R$ = " + df.format(specificProfit[2]));
+		System.out.printf("Lucro em porcentagem = %.2f%% \n", specificProfit[3]);
 	}
 	
 	
-
+	
 }
-//TODO erro em novo registro na parte de colocar dinheiro, bug de inserir letras VVV
-//TODO try/catch VVV
+//TODOF erro em novo registro na parte de colocar dinheiro, bug de inserir letras VVV
+//TODOF try/catch VVV
 //TODO Traduzir
-//TODO limpar notas (falta em outras classes)
-//TODO Fechar resultset, statement, connection
-//TODO formatar dinheiro
-//TODO descobrir como bota porcentagem no lucro
-//TODO ajeitar codigo
+//TODOF limpar notas (falta em outras classes)
+//TODOF Fechar resultset, statement, connection VVV
+//TODOF formatar dinheiro 
+//TODOF descobrir como bota porcentagem no lucro VVV
+//TODO ajeitar codigo (metade feito, falta dentro dos metodos)
+//TODO opção de salvar backup do atual estado da ação? (so o nome, acumulo, data)
+//TODOF ajustar limite de dinheiro VVV

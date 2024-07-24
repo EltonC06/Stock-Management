@@ -22,38 +22,42 @@ public class StockManager {
 	
 	private  ArrayList<Stock> listOfStocks = new ArrayList<Stock>();
 	
-
+	private PastStockSaver pss = new PastStockSaver();
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	SimpleDateFormat sqlsdf = new SimpleDateFormat("yyyy/MM/dd");
 	
 	public StockManager() {
-		createTable(); // esse comando so é executado 1 vez e vai criar uma tabela se o usuário não tiver uma
+		createTable();
 	}
 	
-	public void insertStock(Stock stock) {
+	
+	
+	public void insertStock(Stock stock, boolean showMessage) {
 		try {
 			conn = DB.getConnection();
 			st = conn.createStatement();
-			// (default, 'PSSA3F', 'saúde', '1000.00', '2024-07-18', '1200.00', '2024-09-18'); 
 			String query = "Insert into stocks values (default, '" + stock.getStockName() + "', '" + stock.getStockSector() + "', '" + stock.getStartValue() + "', '" + sqlsdf.format(stock.getStartDate()).replace("/", "-") + "', '" + stock.getAccumulatedValue() + "', '" + sqlsdf.format(stock.getRecordDate()).replace("/", "-") + "');";
-			// o format transforma a data em string no formato desejado. O parse transforma o string em data no formato desejado
 			st.execute(query);
+			if (showMessage) {
+				System.out.println("\nNovo investimento adicionado com sucesso no banco de dados.");
+			} else {
+			}
 		} catch (SQLException msg) {
-			//throw new DbException(msg.getMessage());
-			System.out.println("\nAlgum valor não foi digitado no formato desejado e a ação registrada não foi salva\ntente novamente!");
+			System.out.println("\nAlgum valor não foi digitado no formato desejado e a ação registrada não foi salva, tente novamente!");
 		}
-		// o id vai ser gerado la, e eu o-trago pra cá
 	}
+	
+	
 	
 	private void loadStocks() {
 			try {
 				conn = DB.getConnection();
 				st = conn.createStatement();
 				rs = st.executeQuery("select * from stocks");
-				listOfStocks.clear(); // evitar adicionar ação toda vez que carregar a função
+				listOfStocks.clear(); 
 				
-				while (rs.next()) { // isso é booleano, quando não tiver proxima linha ele vai dar false e vai parar
+				while (rs.next()) { 
 					Stock tempStock = new Stock();
 					tempStock.setStockId(rs.getInt("id"));
 					tempStock.setStockName(rs.getString("stock"));
@@ -64,7 +68,7 @@ public class StockManager {
 					tempStock.setRecordDate(rs.getDate("record_date"));
 					
 
-					listOfStocks.add(tempStock); // adicionando ação na lista local
+					listOfStocks.add(tempStock);
 				}
 				
 			} catch (SQLException msg) {
@@ -72,14 +76,18 @@ public class StockManager {
 			}
 	}
 	
+	
+	
 	public void showAllStocks() {
 		loadStocks();
 		for (int i = 0; i < listOfStocks.size(); i++) {
-			System.out.println(listOfStocks.get(i).toString()); // ideal seria tirar esse indicado I e me basear pelo id das ações
+			System.out.println(listOfStocks.get(i).toString()); 
 		}
 	}
 	
-	public void addNewStockRecord(int stockNum, double accumulatedValue, Date recordDate) { // essa aqui vai ser um comando usual de o usuario mudar o ultimo registro dele
+	
+	
+	public void addNewStockRecord(int stockNum, double accumulatedValue, Date recordDate) {
 	
 		try {
 			conn = DB.getConnection();
@@ -91,23 +99,15 @@ public class StockManager {
 			
 		} catch (SQLException msg) {
 			throw new DbException(msg.getMessage());
-		}
-		
-		
-		// 1º selecionar stock especifica para adicionar seu novo valor acumulado 
-		// 2º adiciconar valor acumulado (sobrescrever o outro)
-		// 3º gerar data automaticamente
-		// 4º atualizar lista 
-		
-		
-		
+		}		
 	}
 	
+	
+	
 	public void changeStockData(int stockNum, ColumnName columnName, String newData, DataType dataType) {
-		// posso interligar o newRecord com esse aq
 		
 		switch (dataType) {
-		case stringandvalue: // stock tem limite de 10 e sector tem limite de 30
+		case stringandvalue: 
 			try {
 				conn = DB.getConnection();
 				st = conn.createStatement();
@@ -126,7 +126,6 @@ public class StockManager {
 				st = conn.createStatement();
 				
 				String query = "update stocks set " + columnName.toString() + " = '" + sqlsdf.format(sdf.parse(newData)) + "' where id = '" + stockNum + "';";
-				// transformei string em data de acordo com o padrão digitado pelo usuario e depois formatei para ficar com o padrão do sql
 				st.execute(query);
 				
 			} catch (SQLException msg) {
@@ -136,8 +135,9 @@ public class StockManager {
 			}	
 			break;
 		}
-
 	}
+	
+	
 	
 	public double[] getGeneralGain() {
 		
@@ -163,7 +163,7 @@ public class StockManager {
 			
 			double percentageProfit = ( (actualFullInvestment - startFullInvestment) / startFullInvestment ) * 100;
 			
-			double[] returnDoubleList = new double[4]; // retornando multiplos valores (é so usar uma lista)
+			double[] returnDoubleList = new double[4];
 			
 			returnDoubleList[0] = startFullInvestment;
 			returnDoubleList[1] = actualFullInvestment;
@@ -176,8 +176,9 @@ public class StockManager {
 		} catch (SQLException msg) {
 			throw new DbException(msg.getMessage());
 		}
-		
 	}
+	
+	
 	
 	public double[] getSpecificGain(int stockNum) {
 		try {
@@ -192,7 +193,7 @@ public class StockManager {
 			double startInvestment = 0;
 			double actualInvestment = 0;
 			
-			if (rs.next()) { // o result set começa na linha 0, então tem que executar um comando antes para que ele passe para a linha 1 para ler os dados
+			if (rs.next()) {
 				startInvestment = rs.getDouble("start_value");
 				actualInvestment = rs.getDouble("accumulated_value");
 			}
@@ -210,8 +211,9 @@ public class StockManager {
 		} catch (SQLException msg) {
 			throw new DbException(msg.getMessage());
 		}
-		
 	}
+	
+	
 	
 	public void deleteStock(int stockNum) {
 		
@@ -229,21 +231,24 @@ public class StockManager {
  	}
 	
 
-	public ArrayList<Stock> getListOfStocks() { // essa lista vai armazenar as ações aqui localmente
+	
+	public ArrayList<Stock> getListOfStocks() {
 		return listOfStocks;
 	}
 	
-	public void resetStockId() { // descobrir jeito mais seguro de resetar ids
+	
+	
+	public void resetStockId() {
 		loadStocks();
 		clearDataBase();
 		
 		for (int i = 0; i<listOfStocks.size(); i++) {
 			Stock tempStock = new Stock(listOfStocks.get(i).getStockName(), listOfStocks.get(i).getStockSector(), listOfStocks.get(i).getStartValue(), listOfStocks.get(i).getStartDate(), listOfStocks.get(i).getAccumulatedValue(), listOfStocks.get(i).getRecordDate());
-			insertStock(tempStock);
+			insertStock(tempStock, false);
 		}
-		
-		
 	}
+	
+	
 	
 	private void clearDataBase() {
 		try {
@@ -257,10 +262,11 @@ public class StockManager {
 		} catch (SQLException msg) {
 			throw new DbException(msg.getMessage());
 		}
-		
 	}
 	
-	private void createTable() { // aqui é pra usuarios novos, ele vai criar a tabela por ele (não da pra criar banco de dados por ele)
+	
+	
+	private void createTable() { 
 		try {
 			conn = DB.getConnection();
 			st = conn.createStatement();
@@ -269,9 +275,9 @@ public class StockManager {
 					+ "  `id` int NOT NULL AUTO_INCREMENT,\r\n"
 					+ "  `stock` varchar(10) NOT NULL,\r\n"
 					+ "  `sector` varchar(20) NOT NULL,\r\n"
-					+ "  `start_value` decimal(10,2) NOT NULL,\r\n"
+					+ "  `start_value` decimal(12,2) NOT NULL,\r\n"
 					+ "  `start_date` date NOT NULL,\r\n"
-					+ "  `accumulated_value` decimal(10,2) NOT NULL,\r\n"
+					+ "  `accumulated_value` decimal(12,2) NOT NULL,\r\n"
 					+ "  `record_date` date NOT NULL,\r\n"
 					+ "  PRIMARY KEY (`id`)\r\n"
 					+ ") ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
@@ -282,9 +288,36 @@ public class StockManager {
 		} catch (SQLException msg) {
 			throw new DbException(msg.getMessage());
 		}
-		
-		
 	}
+	
+	
+	
+	public void closeSystem() {
+		
+		saveStockData();
+		
+		DB.closeConnection();
+		try {
+			st.close();
+			rs.close();
+		} catch (SQLException msg) {
+			throw new DbException(msg.getMessage());
+		}
+	}
+	
+	
+	
+	private void saveStockData() {
+		resetStockId();
+		
+		for (int i = 0; i < listOfStocks.size(); i++) {
+			
+			pss.saveStockRecordData(listOfStocks.get(i));	
+			
+		}
+	}
+	
+	
 	
 	
 }
