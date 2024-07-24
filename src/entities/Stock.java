@@ -47,16 +47,7 @@ public class Stock {
 		this.recordDate = recordDate;
 	}
 	
-	
-	// para o arquivo csv salvar e mostrar ao usuario
-	public Stock (String stockName, double accumulatedValue, Date recordDate) {
-		super();
-		this.stockName = stockName;
-		this.accumulatedValue = accumulatedValue;
-		this.recordDate = recordDate;
-	}
-	
-	
+		
 	
 	public String getStockName() {
 		return stockName;

@@ -40,46 +40,46 @@ public class StockManager {
 			String query = "Insert into stocks values (default, '" + stock.getStockName() + "', '" + stock.getStockSector() + "', '" + stock.getStartValue() + "', '" + sqlsdf.format(stock.getStartDate()).replace("/", "-") + "', '" + stock.getAccumulatedValue() + "', '" + sqlsdf.format(stock.getRecordDate()).replace("/", "-") + "');";
 			st.execute(query);
 			if (showMessage) {
-				System.out.println("\nNovo investimento adicionado com sucesso no banco de dados.");
+				System.out.println("\nNew investment added successfully in the database!");
 			} else {
 			}
 		} catch (SQLException msg) {
-			System.out.println("\nAlgum valor não foi digitado no formato desejado e a ação registrada não foi salva, tente novamente!");
+			System.out.println("\nSome values weren't typed correctly, please try again!");
 		}
 	}
 	
 	
 	
 	private void loadStocks() {
-			try {
-				conn = DB.getConnection();
-				st = conn.createStatement();
-				rs = st.executeQuery("select * from stocks");
-				listOfStocks.clear(); 
+		try {
+			conn = DB.getConnection();
+			st = conn.createStatement();
+			rs = st.executeQuery("select * from stocks");
+			listOfStocks.clear(); 
+			
+			while (rs.next()) { 
+				Stock tempStock = new Stock();
+				tempStock.setStockId(rs.getInt("id"));
+				tempStock.setStockName(rs.getString("stock"));
+				tempStock.setStockSector(rs.getString("sector"));
+				tempStock.setStartValue(rs.getDouble("start_value"));
+				tempStock.setStartDate(rs.getDate("start_date"));
+				tempStock.setAccumulatedValue(rs.getDouble("accumulated_value"));
+				tempStock.setRecordDate(rs.getDate("record_date"));
 				
-				while (rs.next()) { 
-					Stock tempStock = new Stock();
-					tempStock.setStockId(rs.getInt("id"));
-					tempStock.setStockName(rs.getString("stock"));
-					tempStock.setStockSector(rs.getString("sector"));
-					tempStock.setStartValue(rs.getDouble("start_value"));
-					tempStock.setStartDate(rs.getDate("start_date"));
-					tempStock.setAccumulatedValue(rs.getDouble("accumulated_value"));
-					tempStock.setRecordDate(rs.getDate("record_date"));
-					
-
-					listOfStocks.add(tempStock);
-				}
-				
-			} catch (SQLException msg) {
-				throw new DbException(msg.getMessage());
+				listOfStocks.add(tempStock);
 			}
+			
+		} catch (SQLException msg) {
+			throw new DbException(msg.getMessage());
+		}
 	}
 	
 	
 	
 	public void showAllStocks() {
 		loadStocks();
+		
 		for (int i = 0; i < listOfStocks.size(); i++) {
 			System.out.println(listOfStocks.get(i).toString()); 
 		}
@@ -88,7 +88,6 @@ public class StockManager {
 	
 	
 	public void addNewStockRecord(int stockNum, double accumulatedValue, Date recordDate) {
-	
 		try {
 			conn = DB.getConnection();
 			st  = conn.createStatement();
@@ -105,8 +104,8 @@ public class StockManager {
 	
 	
 	public void changeStockData(int stockNum, ColumnName columnName, String newData, DataType dataType) {
-		
 		switch (dataType) {
+		
 		case stringandvalue: 
 			try {
 				conn = DB.getConnection();
@@ -120,12 +119,14 @@ public class StockManager {
 				throw new DbException(msg.getMessage());
 			}
 			break;
+		
 		case date:
 			try {
 				conn = DB.getConnection();
 				st = conn.createStatement();
 				
 				String query = "update stocks set " + columnName.toString() + " = '" + sqlsdf.format(sdf.parse(newData)) + "' where id = '" + stockNum + "';";
+				
 				st.execute(query);
 				
 			} catch (SQLException msg) {
@@ -142,6 +143,8 @@ public class StockManager {
 	public double[] getGeneralGain() {
 		
 		try {
+			Double actualFullInvestment = 0.0;
+			Double startFullInvestment = 0.0;
 			
 			conn = DB.getConnection();
 			st = conn.createStatement();
@@ -150,14 +153,10 @@ public class StockManager {
 			
 			rs = st.executeQuery(query);
 			
-			Double actualFullInvestment = 0.0;
-			Double startFullInvestment = 0.0;
-			
 			while (rs.next()) {
 				actualFullInvestment += rs.getDouble("accumulated_value");
 				startFullInvestment += rs.getDouble("start_value");
 			}
-			
 			
 			double profit = actualFullInvestment - startFullInvestment;
 			
@@ -172,7 +171,6 @@ public class StockManager {
 			
 			return returnDoubleList;
 
-			
 		} catch (SQLException msg) {
 			throw new DbException(msg.getMessage());
 		}
@@ -216,7 +214,6 @@ public class StockManager {
 	
 	
 	public void deleteStock(int stockNum) {
-		
 		try {
 			conn = DB.getConnection();
 			st = conn.createStatement();
@@ -282,7 +279,6 @@ public class StockManager {
 					+ "  PRIMARY KEY (`id`)\r\n"
 					+ ") ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;";
 			
-			
 			st.execute(query);
 			
 		} catch (SQLException msg) {
@@ -293,11 +289,10 @@ public class StockManager {
 	
 	
 	public void closeSystem(boolean csvSave) {
-		
-
 		saveStockData(csvSave);
 		
 		DB.closeConnection();
+		
 		try {
 			st.close();
 			rs.close();
@@ -323,8 +318,4 @@ public class StockManager {
 			
 		}
 	}
-	
-	
-	
-	
 }
