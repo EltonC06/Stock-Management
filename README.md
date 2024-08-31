@@ -1,55 +1,54 @@
 # Stock Management
 
-(https://github.com/EltonC06/Stock-Management/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/EltonC06/Stock-Management/blob/main/LICENSE)
 
-## Sobre o Projeto
+## About the project
 
-Stock Management é uma aplicação back end construída para fins de aprendizado.
+Stock Management is a back-end application developed for educational purposes.
 
-A aplicação permite ao usuário gerenciar suas ações, registrando investimentos iniciais e acompanhando o valor atual para calcular os ganhos.
+The application allows users to manage their stocks, by recording initial investments and tracking the current value to calculate profits.
 
-## Tecnologias Utilizadas
+## Technologies Used
 
-### Back End
+### Back-End
 - Java
 - MySQL
 
-## Como Executar o Projeto
+## How to Run the Project
 
-### Pré-requisitos
-- IDE de Java (Preferencialmente Eclipse)
+### Prerequisites
+- IDE de Java (Eclipse recommended)
 - Java 17
 - MySQL
 
-### Passo a Passo
+### Step-by-Step
 
-1. **Clonar Repositório**
+1. **Clone Repository**
    ```bash
    git clone git@github.com:EltonC06/Stock-Management.git
    ```
 
-2. **Configurar Banco de Dados**
-   - Crie um banco de dados MySQL e configure as suas credenciais (URL do banco de dados, usuário, senha) no arquivo de configuração do projeto: db.properties.
+2. **Open the Project**
+   - Open the project in a Java IDE (tested only in Eclipse).
 
-3. **Entrar na Pasta do Projeto**
-   - Abra o projeto em uma IDE Java (projeto testado somente no Eclipse).
+3. **Configure Database**
+   - Create a MySQL database and configure your credentials. (database URL, user, password) on project configuration file: db.properties.
 
-4. **Executar o Programa**
-   - Navegue até `src -> application -> Program` e execute o programa.
+4. **Run the Program**
+   - Go to `src -> application -> Program` and run the program.
 
-### Observações
+### Observations
 
-- O programa foi testado apenas no Windows.
-- Para modificar o local de armazenamento dos registros no arquivo csv, acesse:
-  `src -> entities -> CsvLink` e altere o método `csvPathLink` com o caminho desejado.
+   - The program was only tested on Windows
+   - To modify the storage location of CSV records, go to: `src -> entities -> CsvLink` and change the `csvPathLink` method to the desired path.
 
-## Como Você Pode Contribuir
+## How You Can Contribute
 
-- Melhorar a validação de entrada de dados para evitar erros.
-- Adicionar funcionalidades de exportação de dados para CSV.
-- Implementar uma interface gráfica para visualização das ações e ganhos.
+- Improve data input validation to prevent errors.
+- Improve functionality to export data to a CSV file.
+- Implement a graphical interface to display the invested stocks and their profits.
 
-## Autor
+## Author
 
 Elton da Costa Oliveira
 
